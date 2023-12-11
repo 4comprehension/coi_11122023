@@ -1,9 +1,10 @@
 package com.for_comprehension.reactor.E1_reactive;
 
 import org.assertj.core.api.Assertions;
-import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+import reactor.test.scheduler.VirtualTimeScheduler;
 
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
@@ -11,54 +12,72 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
-/**
- * @implNote yes, this is not how you're supposed to test reactive code. Do not worry, you will have a chance to rewrite those later :)
- */
 class L2_MonoTest {
 
     @Test
     void test_L0_createEmptyMono() {
-        assertNull(L2_Mono.L0_createEmptyMono().block());
+        StepVerifier.create(L2_Mono.L0_createEmptyMono())
+          .verifyComplete();
     }
 
     @Test
     void test_L1_createEagerMono() {
         int value = 5;
-        assertEquals(value, L2_Mono.L1_createEagerMono(value).block());
+        StepVerifier.create(L2_Mono.L1_createEagerMono(value))
+          .expectNext(value)
+          .verifyComplete();
     }
 
     @Test
     void test_L2_createLazyMono() {
         AtomicInteger counter = new AtomicInteger(0);
         var mono = L2_Mono.L2_createLazyMono(counter);
-        assertEquals(1, mono.block());
-        assertEquals(1, counter.get());
-        assertEquals(2, mono.block());
-        assertEquals(2, counter.get());
+
+        StepVerifier.create(mono)
+          .expectNextMatches(i -> counter.get() == 1 && i.equals(1))
+          .verifyComplete();
+
+        StepVerifier.create(mono)
+          .expectNextMatches(i -> counter.get() == 2 && i.equals(2))
+          .verifyComplete();
     }
 
     @Test
     void test_L3_createLazyMonoAndCache() {
         var counter = new AtomicInteger(0);
         var mono = L2_Mono.L3_createLazyMonoAndCache(counter);
-        assertEquals(1, mono.block());
-        assertEquals(1, mono.block());
-        assertEquals(1, counter.get());
+
+        StepVerifier.create(mono)
+          .expectNext(1)
+          .verifyComplete();
+
+        StepVerifier.create(mono)
+          .expectNext(1)
+          .verifyComplete();
     }
 
     @Test
     void test_L4_createLazyMonoAndCacheTTL() throws InterruptedException {
         AtomicInteger counter = new AtomicInteger(0);
-        Mono<Integer> mono = L2_Mono.L4_createLazyMonoAndCacheTTL(counter, 2);
-        assertEquals(1, mono.block());
-        Awaitility.await()
-          .during(Duration.ofMillis(1000))
-          .until(() -> mono.block() == 1);
 
-        Awaitility.await()
-          .until(() -> mono.block() > 1);
+        VirtualTimeScheduler vts = VirtualTimeScheduler.create();
+
+        Mono<Integer> mono = L2_Mono.L4_createLazyMonoAndCacheTTL(counter, 2, vts);
+
+        StepVerifier.create(mono)
+          .expectNext(1)
+          .verifyComplete();
+
+        StepVerifier.create(mono)
+          .expectNext(1)
+          .verifyComplete();
+
+        vts.advanceTimeBy(Duration.ofHours(1));
+
+        StepVerifier.create(mono)
+          .expectNext(2)
+          .verifyComplete();
     }
 
     @Test

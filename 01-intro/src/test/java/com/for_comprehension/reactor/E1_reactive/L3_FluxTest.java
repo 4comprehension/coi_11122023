@@ -23,27 +23,36 @@ class L3_FluxTest {
 
     @Test
     void L0_createEmptyFlux() {
-        assertTrue(L3_Flux.L0_createEmptyFlux().collectList().block().isEmpty());
+        StepVerifier.create(L3_Flux.L0_createEmptyFlux()).verifyComplete();
     }
 
     @Test
     void L1_createEagerFlux() {
         AtomicInteger counter = new AtomicInteger(0);
-        assertEquals(List.of(1, 2, 3), L3_Flux.L1_createEagerFlux(counter).collectList().block());
+        StepVerifier.create(L3_Flux.L1_createEagerFlux(counter))
+          .expectNext(1,2,3)
+          .verifyComplete();
     }
 
     @Test
     void L2_createLazyFlux() {
         AtomicInteger counter = new AtomicInteger(0);
-        assertEquals(List.of(1, 2, 3), L3_Flux.L2_createLazyFlux(counter).collectList().block());
+        StepVerifier.create(L3_Flux.L2_createLazyFlux(counter))
+          .expectNext(1,2,3)
+          .verifyComplete();
     }
 
     @Test
     void L3_createLazyMonoAndCache() {
         AtomicInteger counter = new AtomicInteger(0);
         var result = L3_Flux.L3_createLazyFluxAndCache(counter);
-        assertEquals(List.of(1, 2, 3), result.collectList().block());
-        assertEquals(List.of(1, 2, 3), result.collectList().block());
+        StepVerifier.create(result)
+          .expectNext(1,2,3)
+          .verifyComplete();
+
+        StepVerifier.create(result)
+          .expectNext(1,2,3)
+          .verifyComplete();
     }
 
     @Test

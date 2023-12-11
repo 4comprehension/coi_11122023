@@ -1,6 +1,7 @@
 package com.for_comprehension.reactor.E1_reactive;
 
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -61,6 +62,10 @@ class L2_Mono {
      */
     static Mono<Integer> L4_createLazyMonoAndCacheTTL(AtomicInteger counter, int seconds) {
         return Mono.fromSupplier(counter::incrementAndGet).cache(Duration.ofSeconds(seconds));
+    }
+
+    static Mono<Integer> L4_createLazyMonoAndCacheTTL(AtomicInteger counter, int seconds, Scheduler scheduler) {
+        return Mono.fromSupplier(counter::incrementAndGet).cache(Duration.ofSeconds(seconds), scheduler);
     }
 
     /**
