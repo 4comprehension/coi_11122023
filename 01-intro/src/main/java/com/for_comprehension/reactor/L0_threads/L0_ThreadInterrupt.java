@@ -52,14 +52,18 @@ class L0_ThreadInterrupt {
                     System.out.println("interrupted, closing gracefully...");
                     break;
                 }
+                boolean interrupted = false;
                 try {
                     Thread.sleep(processingTime.toMillis());
                 } catch (InterruptedException e) {
                     System.out.println("interrupted exception, closing gracefully...");
-                    break;
+                    interrupted = true;
                 }
 
                 concurrentProcessor.process(i);
+                if (interrupted) {
+                    break;
+                }
             }
         });
 
