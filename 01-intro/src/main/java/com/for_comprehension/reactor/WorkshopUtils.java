@@ -2,12 +2,20 @@ package com.for_comprehension.reactor;
 
 import jdk.jshell.spi.ExecutionControl;
 
-final class WorkshopUtils {
+public final class WorkshopUtils {
 
     private WorkshopUtils() {
     }
 
-    static <T> T todo() {
+    public static <T> T todo() {
         throw new RuntimeException("NOT IMPLEMENTED");
+    }
+
+    public static void sleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
