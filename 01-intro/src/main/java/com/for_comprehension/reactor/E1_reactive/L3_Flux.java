@@ -20,21 +20,21 @@ class L3_Flux {
      * Create an empty {@link Flux}
      */
     static <T> Flux<T> L0_createEmptyFlux() {
-        return todo();
+        return Flux.empty();
     }
 
     /**
      * Create a {@link Flux} that returns three next increments of counter value <strong>eagerly</strong>
      */
     static Flux<Integer> L1_createEagerFlux(AtomicInteger counter) {
-        return todo();
+        return Flux.just(counter.incrementAndGet(), counter.incrementAndGet(), counter.incrementAndGet());
     }
 
     /**
      * Create a {@link Flux} that returns three next increments of counter value <strong>lazily</strong>
      */
     static Flux<Integer> L2_createLazyFlux(AtomicInteger counter) {
-        return todo();
+        return Flux.fromStream(() -> Stream.of(counter.incrementAndGet(), counter.incrementAndGet(), counter.incrementAndGet()));
     }
 
     /**
@@ -43,7 +43,7 @@ class L3_Flux {
      * @implNote values of the {@link Flux} needs to be cached so that subsequent calls do not result in counter increment
      */
     static Flux<Integer> L3_createLazyFluxAndCache(AtomicInteger counter) {
-        return todo();
+        return L2_createLazyFlux(counter).cache();
     }
 
     /**
@@ -52,7 +52,8 @@ class L3_Flux {
      * @implNote values of the {@link Flux} needs to be cached so that subsequent calls do not result in counter increment <strong>(ttl should be set to a provided value)</strong>
      */
     static Flux<Integer> L4_createLazyFluxAndCacheWithTTL(AtomicInteger counter, int millis) {
-        return todo();
+        return L2_createLazyFlux(counter)
+          .cache(Duration.ofMillis(millis));
     }
 
     /**
@@ -61,7 +62,7 @@ class L3_Flux {
      * @implNote don't worry about blocking, it's fine (for now :) )
      */
     static List<Integer> L5_getValue(Flux<Integer> flux) {
-        return todo();
+        return flux.collectList().block();
     }
 
     /**
@@ -70,7 +71,7 @@ class L3_Flux {
      * @implNote don't worry about blocking, it's fine (for now :) )
      */
     static List<Integer> L6_getValueWithTimeout(Flux<Integer> flux, int millis) {
-        return todo();
+        return flux.collectList().block(Duration.ofMillis(millis));
     }
 
     /**
@@ -79,7 +80,7 @@ class L3_Flux {
      * @implNote don't worry about blocking, it's fine (for now :) )
      */
     static List<Integer> L7_getValueWithTimeoutOrElse(Flux<Integer> flux, int seconds, int fallbackValue) {
-        return todo();
+        return flux.timeout(Duration.ofSeconds(seconds), Mono.just(fallbackValue)).collectList().block();
     }
 
     /**
@@ -88,7 +89,7 @@ class L3_Flux {
      * @implNote don't worry about blocking, it's fine (for now :) )
      */
     static Integer L8_getFirstValue(Flux<Integer> flux) {
-        return todo();
+        return flux.blockFirst();
     }
 
     /**
@@ -96,7 +97,7 @@ class L3_Flux {
      */
     static List<Integer> L9_fixMissingValues(Flux<Integer> flux) throws InterruptedException {
         var results = Collections.<Integer>synchronizedList(new ArrayList<>());
-        flux.doOnNext(results::add);
+        flux.doOnNext(results::add).subscribe();
 
         Thread.sleep(1000);
         return results;
@@ -110,6 +111,7 @@ class L3_Flux {
     static List<Integer> L10_fixMissingValues(Flux<Integer> flux) {
         var finished = new AtomicBoolean();
         var results = Collections.<Integer>synchronizedList(new ArrayList<>());
+        flux.subscribe(results::add, e -> {}, () -> finished.set(true));
 
         while (!finished.get()) {
             Thread.onSpinWait();
@@ -121,6 +123,6 @@ class L3_Flux {
      * Convert {@link Mono} to {@link Flux} by repeating {@link Mono}'s value N times
      */
     static Flux<Integer> L11_repeatMono(Mono<Integer> mono, int n) {
-        return todo();
+        return mono.repeat(n);
     }
 }
