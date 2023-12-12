@@ -17,8 +17,7 @@ class L2_MonoTest {
 
     @Test
     void test_L0_createEmptyMono() {
-        StepVerifier.create(L2_Mono.L0_createEmptyMono())
-          .verifyComplete();
+        StepVerifier.create(L2_Mono.L0_createEmptyMono()).verifyComplete();
     }
 
     @Test

@@ -6,8 +6,6 @@ import reactor.core.scheduler.Scheduler;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.for_comprehension.reactor.WorkshopUtils.todo;
-
 class L2_Mono {
     public static void main(String[] args) {
         AtomicInteger counter = new AtomicInteger();
@@ -65,7 +63,8 @@ class L2_Mono {
     }
 
     static Mono<Integer> L4_createLazyMonoAndCacheTTL(AtomicInteger counter, int seconds, Scheduler scheduler) {
-        return Mono.fromSupplier(counter::incrementAndGet).cache(Duration.ofSeconds(seconds), scheduler);
+        return Mono.fromSupplier(counter::incrementAndGet)
+          .cache(Duration.ofSeconds(seconds), scheduler);
     }
 
     /**
