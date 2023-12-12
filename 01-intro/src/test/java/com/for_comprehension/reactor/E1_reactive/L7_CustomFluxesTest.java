@@ -3,6 +3,9 @@ package com.for_comprehension.reactor.E1_reactive;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 import static com.for_comprehension.reactor.E1_reactive.L7_CustomFluxes.L12_fibonacci;
 import static com.for_comprehension.reactor.E1_reactive.L7_CustomFluxes.L2_readFile;
 
@@ -24,7 +27,7 @@ class L7_CustomFluxesTest {
     }
 
     @Test
-    public void testL2_readFile() {
+    public void testL2_readFile() throws URISyntaxException, IOException {
         StepVerifier.create(L2_readFile())
           .expectNext("foo")
           .expectNext("bar")
