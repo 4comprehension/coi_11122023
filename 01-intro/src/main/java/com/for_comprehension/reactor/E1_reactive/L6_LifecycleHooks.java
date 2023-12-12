@@ -19,21 +19,21 @@ class L6_LifecycleHooks {
      * Set the flag to true as soon as something subscribes to the {@link Flux}
      */
     static Flux<Long> L1_newSubscriptionHook(Flux<Long> numbers, AtomicBoolean flag) {
-        return WorkshopUtils.todo();
+        return numbers.doOnSubscribe(__ -> flag.set(true));
     }
 
     /**
      * Set the flag to true as soon as {@link Flux} is cancelled
      */
     static Flux<Long> L2_cancellationHook(Flux<Long> numbers, AtomicBoolean flag) {
-        return WorkshopUtils.todo();
+        return numbers.doOnCancel(() -> flag.set(true));
     }
 
     /**
      * Make sure that counter represents the number of elements that are flowing through {@link Flux}
      */
     static Flux<Long> L3_nextHook(Flux<Long> numbers, AtomicInteger counter) {
-        return WorkshopUtils.todo();
+        return numbers.doOnNext(__ -> counter.getAndIncrement());
     }
 
     /**
@@ -42,7 +42,7 @@ class L6_LifecycleHooks {
      * @implNote assume that the list is thread-safe
      */
     static Flux<Long> L4_errorHook(Flux<Long> numbers, List<String> errors) {
-        return WorkshopUtils.todo();
+        return numbers.doOnError(ex -> errors.add(ex.getMessage()));
     }
 
     /**
@@ -50,14 +50,14 @@ class L6_LifecycleHooks {
      * The callback should be invoked upon completion or if an error occurs.
      */
     static Flux<Long> L5_terminationHook(Flux<Long> numbers, Runnable callback) {
-        return WorkshopUtils.todo();
+        return numbers.doOnTerminate(callback);
     }
 
     /**
      * Register a callback action to be executed when the upstream terminates for any reason, including cancellation.
      */
     static Flux<Long> L6_finallyHook(Flux<Long> numbers, Consumer<SignalType> callback) {
-        return WorkshopUtils.todo();
+        return numbers.doFinally(callback);
     }
 
     /**
@@ -66,12 +66,16 @@ class L6_LifecycleHooks {
      * @implNote use three separate doFirst calls with hardcoded values, this exercise is about execution order :)
      */
     static Flux<Long> L7_firstHooksSequence(Flux<Long> numbers, List<Integer> values) {
-        return WorkshopUtils.todo();
+        return numbers
+          .doFirst(() -> values.add(3))
+          .doFirst(() -> values.add(2))
+          .doFirst(() -> values.add(1));
     }
 
     /**
      * Explore {@link Hooks}, we'll be back to some of those later :)
      */
     static void L8_globalHook() {
+//        Hooks.enableAutomaticContextPropagation();
     }
 }
