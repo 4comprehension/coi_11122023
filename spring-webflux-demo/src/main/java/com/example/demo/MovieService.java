@@ -31,12 +31,12 @@ class MovieService {
         return atomicOperation;
     }
 
-    Flux<MovieWithDescirption> getMovies() {
+    Flux<MovieWithDescription> getMovies() {
         return databaseClient.sql("SELECT * FROM movies")
           .map(row -> new Movie(row.get("id", Integer.class), row.get("title", String.class), row.get("type", String.class)))
           .all()
           .flatMap(m -> descriptions.getForMovieId(m.id)
-            .map(desc -> new MovieWithDescirption(m, desc)));
+            .map(desc -> new MovieWithDescription(m, desc)));
     }
 
     Mono<Void> create() {
@@ -55,7 +55,7 @@ class MovieService {
 
     }
 
-    record MovieWithDescirption(Movie movie, String description) {
+    record MovieWithDescription(Movie movie, String description) {
 
     }
 }

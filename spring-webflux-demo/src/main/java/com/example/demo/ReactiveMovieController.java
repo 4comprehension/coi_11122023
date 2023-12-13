@@ -14,7 +14,7 @@ class ReactiveMovieController {
     }
 
     @GetMapping("/movies")
-    public Flux<MovieService.MovieWithDescirption> getMovies() {
+    public Flux<MovieService.MovieWithDescription> getMovies() {
         return userService.getMovies();
     }
 }
