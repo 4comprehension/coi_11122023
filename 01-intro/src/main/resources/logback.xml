@@ -1,6 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout>
+            <Pattern>%-4r [%thread] %-5level tenantId:%X{tid} - %msg%n</Pattern>
+        </layout>
+    </appender>
 
-    <logger name="org" level="INFO"/>
-
+    <root level="debug">
+        <appender-ref ref="CONSOLE"/>
+    </root>
 </configuration>
