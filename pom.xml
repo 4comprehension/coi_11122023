@@ -11,6 +11,7 @@
 
     <modules>
         <module>01-intro</module>
+        <module>spring-web-demo</module>
     </modules>
 
     <properties>
