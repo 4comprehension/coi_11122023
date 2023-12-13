@@ -12,6 +12,7 @@
     <modules>
         <module>01-intro</module>
         <module>spring-web-demo</module>
+        <module>spring-webflux-demo</module>
     </modules>
 
     <properties>
